@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  10:37:30 Thu Nov  2 2023 CET
+;;; $$ Last modified:  15:08:17 Wed Nov 15 2023 CET
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -91,7 +91,7 @@ calculations is neue-aula-symposium-decoder2.json
 Trig help for those who have forgotten everything they learned at school:
 http://www.csgnetwork.com/trigtriformulatables.html
 
-(load "~/ic/mix/Ambisonic Production Templates/ambi-speakers.lsp")
+(load "/Users/michael/ic/folkwang/github-icem/Lisp/ambi-speakers.lsp")
 |#
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -156,7 +156,10 @@ http://www.csgnetwork.com/trigtriformulatables.html
                 ;; a .json file for import into the IEM decoders. Todo: write
                 ;; the actual file.
                    (format t "~&      {")
-                   (format t "~%        \"Azimuth\": ~,3f," qazi)
+                ;; MDE Wed Nov 15 14:54:14 2023, Heidhausen -- no degrees > 180 
+                   (format t "~%        \"Azimuth\": ~,3f," (if (> qazi 180)
+                                                                (- qazi 360)
+                                                                qazi))
                    (format t "~%        \"Elevation\": ~,3f," elevation)
                    (format t "~%        \"Radius\": 1.0,~
                               ~%        \"IsImaginary\": false,~
@@ -285,7 +288,6 @@ http://www.csgnetwork.com/trigtriformulatables.html
                        (2 (650 800 350)) ; main: vida R (war (550 1100 500))
                        (3 (0 1100 550)) ; centre: Gravis 15XW
                        ;; 4 is main sub cluster
-                       ;; the rear vidas are not yet with us
                        (6 (550 -1100 150)) ; main rears: vida R
                        (5 (-550 -1100 150)) ; main rears: vida L
                        (7 (-800 400 500)) ; ring VL: gravis 15XW
@@ -324,7 +326,6 @@ http://www.csgnetwork.com/trigtriformulatables.html
                        (2 (650 800 350)) ; main: vida R (war (550 1100 500))
                        (3 (0 1100 550)) ; centre: Gravis 15XW
                        ;; 4 is main sub cluster
-                       ;; the rear vidas are not yet with us
                        (5 (550 -1100 150)) ; main rears: vida R
                        (6 (-550 -1100 150)) ; main rears: vida L
                        (7 (-800 400 500)) ; ring VL: gravis 15XW
