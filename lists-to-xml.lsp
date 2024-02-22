@@ -2,9 +2,20 @@
 
 (in-package :sc)
 
+;; *** get-load-path
+;;; get either the directory, that this file was loaded from as a string, or
+;;;  when this function is not being loaded from a file, get the
+;;;  *default-pathname-defaults*, which might be something like /home/user/.
+(defun get-load-path ()
+  (let ((load-name (or *load-truename* *compile-file-truename*
+		       *default-pathname-defaults*)))
+    (namestring
+     (make-pathname :directory (pathname-directory load-name)
+		    :device (pathname-device load-name)))))
+
 ;; *** nth-mod
 (defun nth-mod (n rthm-ls)
-  (nth (mod n (length rthm-ls)) rthm-ls))
+  (nth (mod n (length rthm-ls)) rthm-ls)) 
 
 ;; *** pad-lists
 ;;; if one list is shorter than the other, loop it until is has the same length
@@ -91,7 +102,9 @@
 ;;; mark - for example just a string with text.
 ;;; Note, that if one of duration or pitch list is shorter than the other, the
 ;;; shorter one will be looped until it has the same length as the longer one.
-;;; -file should be the path to and the filename for the resulting .xml file
+;;; -file should be the path to and the filename for the resulting .xml file.
+;;;  If file is nil, one will be automatically generated from the load-path of
+;;;  this file.
 ;;;
 ;;; This is essentially an implementation of this:
 ;;; https://github.com/mdedwards/slippery-chicken/wiki/How-can-I-'roll-my-own'-slippery-chicken%3F
@@ -100,63 +113,72 @@
 #|
 ;; simple example using one instrument:
 (lists-to-xml '((player-one piano (4 4 6 2) (e5 nil d5 a5) ((0 "schneller") (2 "pp")))) 
-	      "/E/code/ensemble/test.xml" :tempo 120)
+	      nil :tempo 120)
 
 ;; same but change time signature:
 (lists-to-xml '((player-one piano (4 4 6 2 1) (e5 nil d5 a5) ((0 "schneller") (2 "pp"))))
-	      "/E/code/ensemble/test.xml" :tempo 120 :time-sig '(3 4))
+	      nil :tempo 120 :time-sig '(3 4))
 
 ;; complex example:
 (lists-to-xml '((player-one piano (3 3 3 4 3) (e5) )
 		(player-two flute (6) ((e5 a5)) ((0 "schneller") (2 "pp")))
 		(player-three bassoon (2) (e5) ((0 "schneller") (2 "pp"))))
-	      "/E/code/ensemble/test1.xml" :tempo 70 :time-sig '(5 8))
+	      nil :tempo 70 :time-sig '(5 8))
 |#
-(defun lists-to-xml (lists file &key (time-sig '(4 4)) (tempo 60)
-				  (title (pathname-name file)) composer)
-  (unless (and (listp lists) (loop for ls in lists always (listp ls)))
-    (error "lists in lists-to-xml seems to be malformed"))
-  (let* (sc list-of-list-of-bars)
-    (loop for i in lists
-	  ;; split durations so they fit into bars and parse to (tied) events
-	  for events = (durations-and-pitches-to-events
-			(third i) (fourth i) time-sig tempo)
-	  do (multiple-value-bind (events attacks-indices)
-		 (durations-and-pitches-to-events
-		  (third i) (fourth i) time-sig tempo)
-	       ;; add marks to events (using a list of indices of the events
-	       ;; before they were split into bars).
-	       (loop for m in (fifth i) 
-		     when (< (car m) (length attacks-indices))
-		       do (add-mark (nth (nth (car m) attacks-indices) events)
-			      (cadr m)))
-	       ;; generate bars
-	       (push (loop while events
-			   for bar = (make-rthm-seq-bar `(,time-sig))
-			   for ate = (fill-with-rhythms bar events)
-			   do (setf events (when ate (nthcdr ate events)))
-			   collect bar)
-		     list-of-list-of-bars)))
-    ;; pad list-of-bars that are shorter than others in list-of-list-of-bars
-    (let ((list-of-bars-len (mapcar #'length list-of-list-of-bars)))
-      (unless (apply #'= list-of-bars-len)
-	(let* ((max-len (apply #'max list-of-bars-len))
-	       (empty-bar (make-rthm-seq-bar `(,time-sig))))
-	  (fill-with-rhythms
-	   empty-bar `(,(make-event nil (apply #'/ time-sig)
-				    :duration t :is-rest t)))
-	  (setf list-of-list-of-bars
-		(loop for bars in list-of-list-of-bars
-		      collect (append bars (ml empty-bar
-					       (- max-len (length bars)))))))))
-    ;; put them in a slippery-chicken object:
-    (loop for bars in (reverse list-of-list-of-bars) and i in lists
-	  do (setf sc (bars-to-sc bars :sc sc :player (first i)
-				       :instrument (second i) :tempo tempo)))
-    ;; set composer and title
-    (setf (composer sc) composer (title sc) title)
-    (check-ties sc t)
-    ;; call write-xml on sc-object
-    (write-xml sc :file file)))
+(let ((default-dir (get-load-path)))
+  (defun lists-to-xml (lists file &key (time-sig '(4 4)) (tempo 60)
+				    title composer)
+    ;; maybe set file and title
+    (unless title
+      (setf title (if file (pathname-name file) "untitled")))
+    (unless file
+      (setf file (format nil "~a~a~a~a"
+			 default-dir "lists-to-xml-" title ".xml")))
+    ;; sanity checks:
+    (unless (and (listp lists) (loop for ls in lists always (listp ls)))
+      (error "lists in lists-to-xml seems to be malformed"))
+    (let* (sc list-of-list-of-bars)
+      (loop for i in lists
+	    ;; split durations so they fit into bars and parse to (tied) events
+	    for events = (durations-and-pitches-to-events
+			  (third i) (fourth i) time-sig tempo)
+	    do (multiple-value-bind (events attacks-indices)
+		   (durations-and-pitches-to-events
+		    (third i) (fourth i) time-sig tempo)
+		 ;; add marks to events (using a list of indices of the events
+		 ;; before they were split into bars).
+		 (loop for m in (fifth i) 
+		       when (< (car m) (length attacks-indices))
+			 do (add-mark (nth (nth (car m) attacks-indices) events)
+				(cadr m)))
+		 ;; generate bars
+		 (push (loop while events
+			     for bar = (make-rthm-seq-bar `(,time-sig))
+			     for ate = (fill-with-rhythms bar events)
+			     do (setf events (when ate (nthcdr ate events)))
+			     collect bar)
+		       list-of-list-of-bars)))
+      ;; pad list-of-bars that are shorter than others in list-of-list-of-bars
+      (let ((list-of-bars-len (mapcar #'length list-of-list-of-bars)))
+	(unless (apply #'= list-of-bars-len)
+	  (let* ((max-len (apply #'max list-of-bars-len))
+		 (empty-bar (make-rthm-seq-bar `(,time-sig))))
+	    (fill-with-rhythms
+	     empty-bar `(,(make-event nil (apply #'/ time-sig)
+				      :duration t :is-rest t)))
+	    (setf list-of-list-of-bars
+		  (loop for bars in list-of-list-of-bars
+			collect (append bars
+					(ml empty-bar
+					    (- max-len (length bars)))))))))
+      ;; put them in a slippery-chicken object:
+      (loop for bars in (reverse list-of-list-of-bars) and i in lists
+	    do (setf sc (bars-to-sc bars :sc sc :player (first i)
+					 :instrument (second i) :tempo tempo)))
+      ;; set composer and title
+      (setf (composer sc) composer (title sc) title)
+      (check-ties sc t)
+      ;; call write-xml on sc-object
+      (write-xml sc :file file))))
 
 ;; EOF lists-to-xml.lsp
