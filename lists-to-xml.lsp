@@ -125,6 +125,7 @@
 		collect i do (incf i (length tied))))
     (setf diff (- duration-of-bar
 		  (mod (apply #'+ (flatten duration-list)) duration-of-bar)))
+    (when (= diff duration-of-bar) (setf diff 0))
     (setf result
 	  (loop for tied in duration-list and pitch in pitch-list
 		append (loop for dur in tied and k from 1 with len = (length tied)
