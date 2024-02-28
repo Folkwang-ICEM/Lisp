@@ -49,7 +49,7 @@
       (setf quantised (nearest normalised-duration possible-divisions))
       (loop for i in (append (ml 1 full-bars)
 			     (split-into-simpler-ratios quantised))
-	    collect (/ i tempo-mult)))))
+	    unless (= 0 i) collect (/ i tempo-mult)))))
 
 ;; *** split-durations-for-bars
 ;;; returns a list of sublists of durations. These durations can be fit into
