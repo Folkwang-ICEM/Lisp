@@ -147,7 +147,7 @@
     (loop for e in result
 	  do (when (= -1 (letter-value e))
 	       (setf (letter-value e)
-		     (floor (/ 4 (* (duration e))))))) ; ? crude aprox
+		     (round (/ 4 (duration e)))))) ; ? crude aprox
     (values result indices-of-attacks)))
 
 ;; *** lists-to-xml
