@@ -1,3 +1,6 @@
 [submodule "layers"]
 	path = layers
 	url = git@github.com:Leon-Focker/layers.git
+[submodule "Lisax"]
+	path = Lisax
+	url = git@github.com:PhNeum/Lisax.git
