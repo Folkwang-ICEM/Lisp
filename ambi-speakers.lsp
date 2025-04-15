@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  15:08:17 Wed Nov 15 2023 CET
+;;; $$ Last modified:  15:18:09 Tue Apr 15 2025 CEST
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -383,8 +383,60 @@ http://www.csgnetwork.com/trigtriformulatables.html
                  (11 (1 -0.75 1.5))
                  (12 (-1 -0.75 1.5)))))
   (ambi-speakers (loop for speaker in studio1 collect
-                          (jorge-to-ambi speaker))))
+                       (jorge-to-ambi speaker))))
 
+;;; 21.3.25: centre (5) lower and tops further away
+(let ((studio1 '( ;; unterer Ring
+                 (13 (-1.35 3.25 0)) ; (speaker-channel (X Y Z))
+                 (14 (1.35 3.25 0))
+                 (15 (3.25 1.35 0))
+                 (16 (3.25 -1.35 0))
+                 (17 (1.35 -3.25 0))
+                 (18 (-1.35 -3.25 0))
+                 (19 (-3.25 -1.35 0))
+                 (20 (-3.25 1.35 0))
+                 ;; Obere Ring aussen: 1-4 are the big genes: lass ich raus
+                 ;; (1 (-3.25 3.05 1.25))
+                 (5 (0 3.45 1.23))
+                 ;; (2 (3.25 3.05 1.25))
+                 (6 (3.25 0 1.6))
+                 ;; (3 (3.25 -3.05 1.25))
+                 (7 (0 -3.45 1.6))
+                 ;; (4 (-3.25 -3.05 1.25))
+                 (8 (-3.25 0 1.6))
+                 ;; Obere Ring innen
+                 (9 (-1.45 1.45 1.52))
+                 (10 (1.45 1.45 1.52))
+                 (11 (1.45 -1.45 1.52))
+                 (12 (-1.45 -1.45 1.52)))))
+  (ambi-speakers (loop for speaker in studio1
+    collect (jorge-to-ambi speaker))))
+
+;;; jorge-to-sad works for reasurroundpan also:
+(let ((studio1 '(;; unterer Ring
+                 (13 (-1.35 3.25 0))    ; (speaker-channel (X Y Z))
+                 (14 (1.35 3.25 0))
+                 (15 (3.25 1.35 0))
+                 (16 (3.25 -1.35 0))
+                 (17 (1.35 -3.25 0))
+                 (18 (-1.35 -3.25 0))
+                 (19 (-3.25 -1.35 0))
+                 (20 (-3.25 1.35 0))
+                 ;; Obere Ring aussen: 1-4 are the big genes: lass ich raus
+                 ;; (1 (-3.25 3.05 1.25))
+                 (5 (0 3.45 1.23))
+                 ;; (2 (3.25 3.05 1.25))
+                 (6 (3.25 0 1.6))
+                 ;; (3 (3.25 -3.05 1.25))
+                 (7 (0 -3.45 1.6))
+                 ;; (4 (-3.25 -3.05 1.25))
+                 (8 (-3.25 0 1.6))
+                 ;; Obere Ring innen
+                 (9 (-1.45 1.45 1.52))
+                 (10 (1.45 1.45 1.52))
+                 (11 (1.45 -1.45 1.52))
+                 (12 (-1.45 -1.45 1.52)))))
+  (jorge-to-sad studio1))
 |#
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; EOF
