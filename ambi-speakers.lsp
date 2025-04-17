@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  15:18:09 Tue Apr 15 2025 CEST
+;;; $$ Last modified:  16:22:47 Thu Apr 17 2025 CEST
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -243,9 +243,82 @@ http://www.csgnetwork.com/trigtriformulatables.html
                      (first xyz) (second xyz) (third xyz)))
     result))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; 21.3.25: centre (5) lower and tops further away
+(let ((studio1 '( ;; unterer Ring
+                 (13 (-1.35 3.25 0)) ; (speaker-channel (X Y Z))
+                 (14 (1.35 3.25 0))
+                 (15 (3.25 1.35 0))
+                 (16 (3.25 -1.35 0))
+                 (17 (1.35 -3.25 0))
+                 (18 (-1.35 -3.25 0))
+                 (19 (-3.25 -1.35 0))
+                 (20 (-3.25 1.35 0))
+                 ;; Obere Ring aussen: 1-4 are the big genes: lass ich raus
+                 ;; (1 (-3.25 3.05 1.25))
+                 (5 (0 3.45 1.23))
+                 ;; (2 (3.25 3.05 1.25))
+                 (6 (3.25 0 1.6))
+                 ;; (3 (3.25 -3.05 1.25))
+                 (7 (0 -3.45 1.6))
+                 ;; (4 (-3.25 -3.05 1.25))
+                 (8 (-3.25 0 1.6))
+                 ;; Obere Ring innen
+                 (9 (-1.45 1.45 1.52))
+                 (10 (1.45 1.45 1.52))
+                 (11 (1.45 -1.45 1.52))
+                 (12 (-1.45 -1.45 1.52)))))
+  (print "*** Studio 1 -100<->100 range (e.g. reasurroundpan X,Y,Z values)")
+  (jorge-to-sad studio1)
+  (print "*** Studio 1 ambisonics:")
+  (ambi-speakers (loop for speaker in studio1
+                       collect (jorge-to-ambi speaker))))
+
+(let ((neue-aula '((1 (-680 800 325))   ; main: vida L (war  (-550 1100 500))
+                   (2 (680 800 325))    ; main: vida R (war (550 1100 500))
+                   (3 (0 1150 550))     ; centre: Gravis 15XW
+                   ;; 4 is main sub cluster
+                   (5 (525 -1120 150))  ; main rears: vida R
+                   (6 (-525 -1120 150)) ; main rears: vida L
+                   ;; Seiten
+                   (7 (-800 400 500))   ; Seite Vorne Links: gravis 15XW
+                   (8 (800 400 500))    ; Seite Vorne Rechts: gravis 15XW
+                   (9 (-800 -400 500))  ; Seite Hinten Links: gravis 15XW
+                   (10 (800 -400 500))  ; Seite Hinten Rechts: gravis 15XW
+                   (11 (800 0 500))     ; Seite Links Mitte: gravis 15XW
+                   (12 (-800 0 500))    ; Seite Rechts Mitte: gravis 15XW
+                   ;; Decke
+                   (13 (-300 400 800))  ; Decke Links Vorn: gravis 15W
+                   (14 (300 400 800))   ; Decke Rechts Vorn: gravis 15W
+                   (15 (-300 -400 800)) ; Decke Links Hinten: gravis 15W
+                   (16 (300 -400 800))  ; Decke Rechts Hinten: gravis 15W
+                   (17 (-300 0 800))    ; Decke Links Mitte: gravis 15W
+                   (18 (300 0 800))     ; Decke Rechts Vorn: gravis 15W
+                   ;; additional Centres
+                   (19 (-420 1100 500)) ; off Centre Left (front)
+                   (20 (420 1100 500))  ; off Centre Rightt (front)
+                   (21 (0 -1190 190))   ; Hinten Mitte
+                   ;; now for the fills: front are all CA 106 Pros
+                   (22 (-450 700 -50))     ; FF LL (extrem links)
+                   (23 (-225 700 -50))     ; FF L
+                   (24 (0 700 -50))        ; FF C
+                   (25 (225 700 -50))      ; FF R
+                   (26 (450 700 -50))      ; FF RR (extrem rechts)
+                   ;; rears are all Sona 5s
+                   (27 (-800 -1100 550))   ; Empore LL
+                   (28 (-400 -1100 550))   ; Empore L
+                   (29 (400 -1100 550))    ; Empore R
+                   (30 (800 -1100 550))))) ; Empore RR
+  (print "*** Neue Aula -100<->100 range (e.g. reasurroundpan)")
+  (print (jorge-to-sad neue-aula))
+  (print "*** Neue Aula ambisonics:")
+  (ambi-speakers (mapcar #'jorge-to-ambi neue-aula)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #|
-;;; Usage examples
+;;; Usage examples and old data
 
 ;;; MDE Sat Oct 21 13:00:23 2023, Heidhausen -- using the channel numbers
 ;;; suggested this week: mainly banks of 6. NB This is not the channel numbering
@@ -385,32 +458,6 @@ http://www.csgnetwork.com/trigtriformulatables.html
   (ambi-speakers (loop for speaker in studio1 collect
                        (jorge-to-ambi speaker))))
 
-;;; 21.3.25: centre (5) lower and tops further away
-(let ((studio1 '( ;; unterer Ring
-                 (13 (-1.35 3.25 0)) ; (speaker-channel (X Y Z))
-                 (14 (1.35 3.25 0))
-                 (15 (3.25 1.35 0))
-                 (16 (3.25 -1.35 0))
-                 (17 (1.35 -3.25 0))
-                 (18 (-1.35 -3.25 0))
-                 (19 (-3.25 -1.35 0))
-                 (20 (-3.25 1.35 0))
-                 ;; Obere Ring aussen: 1-4 are the big genes: lass ich raus
-                 ;; (1 (-3.25 3.05 1.25))
-                 (5 (0 3.45 1.23))
-                 ;; (2 (3.25 3.05 1.25))
-                 (6 (3.25 0 1.6))
-                 ;; (3 (3.25 -3.05 1.25))
-                 (7 (0 -3.45 1.6))
-                 ;; (4 (-3.25 -3.05 1.25))
-                 (8 (-3.25 0 1.6))
-                 ;; Obere Ring innen
-                 (9 (-1.45 1.45 1.52))
-                 (10 (1.45 1.45 1.52))
-                 (11 (1.45 -1.45 1.52))
-                 (12 (-1.45 -1.45 1.52)))))
-  (ambi-speakers (loop for speaker in studio1
-    collect (jorge-to-ambi speaker))))
 
 ;;; jorge-to-sad works for reasurroundpan also:
 (let ((studio1 '(;; unterer Ring
