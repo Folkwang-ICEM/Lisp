@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  16:22:47 Thu Apr 17 2025 CEST
+;;; $$ Last modified:  13:51:34 Wed Apr 23 2025 CEST
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -280,15 +280,15 @@ http://www.csgnetwork.com/trigtriformulatables.html
                    (2 (680 800 325))    ; main: vida R (war (550 1100 500))
                    (3 (0 1150 550))     ; centre: Gravis 15XW
                    ;; 4 is main sub cluster
-                   (5 (525 -1120 150))  ; main rears: vida R
-                   (6 (-525 -1120 150)) ; main rears: vida L
+                   (5 (-525 -1120 150))  ; main rears: vida R
+                   (6 (525 -1120 150)) ; main rears: vida L
                    ;; Seiten
                    (7 (-800 400 500))   ; Seite Vorne Links: gravis 15XW
                    (8 (800 400 500))    ; Seite Vorne Rechts: gravis 15XW
                    (9 (-800 -400 500))  ; Seite Hinten Links: gravis 15XW
                    (10 (800 -400 500))  ; Seite Hinten Rechts: gravis 15XW
-                   (11 (800 0 500))     ; Seite Links Mitte: gravis 15XW
-                   (12 (-800 0 500))    ; Seite Rechts Mitte: gravis 15XW
+                   (11 (-800 0 500))     ; Seite Links Mitte: gravis 15XW
+                   (12 (800 0 500))    ; Seite Rechts Mitte: gravis 15XW
                    ;; Decke
                    (13 (-300 400 800))  ; Decke Links Vorn: gravis 15W
                    (14 (300 400 800))   ; Decke Rechts Vorn: gravis 15W
