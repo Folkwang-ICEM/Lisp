@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  13:51:34 Wed Apr 23 2025 CEST
+;;; $$ Last modified:  10:38:52 Mon Mar 16 2026 CET
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -101,7 +101,7 @@ http://www.csgnetwork.com/trigtriformulatables.html
 (defun ambi-speakers
     (&optional
        ;; this was the data from the Neue Aula, 14th September 2021, which we
-       ;; can leave for now for historical reflections:xs
+       ;; can leave for now for historical reflections
        ;;
        ;; height floor-distance floor-x quadrant-offset (degrees)
        (speakers '((1 (6.6 14.5 5.5 0))
