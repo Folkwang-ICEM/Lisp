@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  10:38:52 Mon Mar 16 2026 CET
+;;; $$ Last modified:  11:09:59 Sat May 16 2026 CEST
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -100,33 +100,33 @@ http://www.csgnetwork.com/trigtriformulatables.html
 ;;; elevation, distance) and Cartesian XYZ formats
 (defun ambi-speakers
     (&optional
-       ;; this was the data from the Neue Aula, 14th September 2021, which we
-       ;; can leave for now for historical reflections
-       ;;
-       ;; height floor-distance floor-x quadrant-offset (degrees)
-       (speakers '((1 (6.6 14.5 5.5 0))
-                   (2 (6.6 14.5 -5.5 0))
-                   (3 (6.6 10 7 180))   
-                   (4 (6.6 10 -7 180))  
-                   (5 (3.5 13.3 6.2 0)) 
-                   (6 (3.5 13.3 -6.2 0))
-                   (7 (0.8 11.3 5.3 180))
-                   (8 (0.8 11.3 -5.3 180))
-                   (9 (0.8 11.3 0 0))
-                   (10 (0.9 10.4 0 270))
-                   (11 (0.8 10.3 0 180))
-                   (12 (1.5 5.4 0 90))
-                   (13 (5.7 3.5 1.175 0))
-                   (14 (5.7 3.5 -1.175 0))
-                   (15 (5.7 1 1.175 180))
-                   (16 (5.7 1 -1.175 180)))))
+     ;; this was the data from the Neue Aula, 14th September 2021, which we
+     ;; can leave for now for historical reflections:xs
+     ;;
+     ;; height floor-distance floor-x quadrant-offset (degrees)
+     (speakers '((1 (6.6 14.5 5.5 0))
+                 (2 (6.6 14.5 -5.5 0))
+                 (3 (6.6 10 7 180))   
+                 (4 (6.6 10 -7 180))  
+                 (5 (3.5 13.3 6.2 0)) 
+                 (6 (3.5 13.3 -6.2 0))
+                 (7 (0.8 11.3 5.3 180))
+                 (8 (0.8 11.3 -5.3 180))
+                 (9 (0.8 11.3 0 0))
+                 (10 (0.9 10.4 0 270))
+                 (11 (0.8 10.3 0 180))
+                 (12 (1.5 5.4 0 90))
+                 (13 (5.7 3.5 1.175 0))
+                 (14 (5.7 3.5 -1.175 0))
+                 (15 (5.7 1 1.175 180))
+                 (16 (5.7 1 -1.175 180)))))
   ;; MDE Tue Oct 31 13:56:59 2023, Heidhausen -- note that the IEM
   ;; AllRadecoder seems to overwrite the given channel and use instead the
   ;; number order in which they appear, so sort by channel first.
   (setq speakers (sort speakers #'< :key #'first))
   (loop for speaker in speakers do
-           (when (> (count speaker speakers :test #'equalp) 1)
-             (error "found duplicates of ~a" speaker)))
+    (when (> (count speaker speakers :test #'equalp) 1)
+      (error "found duplicates of ~a" speaker)))
   (let (temp elevation azimuth qazi icst)
     (print "IEM (anti-clockwise):")
     (setq icst
@@ -152,14 +152,15 @@ http://www.csgnetwork.com/trigtriformulatables.html
                          azimuth (clm::radians->degrees
                                   (asin (/ floor-x floor-distance)))
                          qazi (+ quadrant azimuth))
-                ;; this is where we print the data that can be copy/pasted into
-                ;; a .json file for import into the IEM decoders. Todo: write
-                ;; the actual file.
+                   ;; this is where we print the data that can be copy/pasted
+                   ;; into a .json file for import into the IEM decoders. Todo:
+                   ;; write the actual file.
                    (format t "~&      {")
-                ;; MDE Wed Nov 15 14:54:14 2023, Heidhausen -- no degrees > 180 
+                   ;; MDE Wed Nov 15 14:54:14 2023, Heidhausen -- no degrees >
+                   ;; 180
                    (format t "~%        \"Azimuth\": ~,3f," (if (> qazi 180)
-                                                                (- qazi 360)
-                                                                qazi))
+                                                              (- qazi 360)
+                                                              qazi))
                    (format t "~%        \"Elevation\": ~,3f," elevation)
                    (format t "~%        \"Radius\": 1.0,~
                               ~%        \"IsImaginary\": false,~
@@ -170,11 +171,12 @@ http://www.csgnetwork.com/trigtriformulatables.html
                 collect (list channel (- qazi) elevation)))
     (terpri)
     (loop for l in icst do
-             (format t "aed ~a ~,3f ~,3f 1.0, " (first l) (second l) (third l)))
+      (format t "aed ~a ~,3f ~,3f 1.0, " (first l) (second l) (third l)))
     (print "ICST (clockwise) Format:")
     (print (mapcar #'(lambda (triple) (list (decimal-places (second triple) 3)
-                                          (decimal-places (third triple) 3)))
-                   icst))))
+                                            (decimal-places (third triple) 3)))
+                   icst))
+    icst))
 
 ;; NB can't handle the colon after ambi:
 (defun ambimon-dump (list &optional (rears t))
@@ -243,78 +245,94 @@ http://www.csgnetwork.com/trigtriformulatables.html
                      (first xyz) (second xyz) (third xyz)))
     result))
 
+(defun summary-doc (coords icst)
+  (terpri)
+  (format t "~%~%channel listing omitting LFE on 4")
+  (format t "~&  degrees (0-360): azimuth (clockwise) elevation ~
+             (X Y Z: -100 to +100):")
+  (loop for triple in icst
+        for coord in coords
+        for azi = (second triple) 
+        for chan =  (first triple) do
+          (format t "~&channel ~a: ~,1f ~,1f ~a"
+                  (if (> chan 4) (1- chan) chan)
+                  (if (< azi -180) (+ 360 azi) azi)
+                  (third triple)
+                  (second coord))))
+
+(defun do-all-systems (studio-string speaker-data)
+  (let (coords icst)
+    (format t "~&*** ~a -100<->100 range (e.g. reasurroundpan)" studio-string)
+    (setq coords (print (jorge-to-sad speaker-data)))
+    (format t "~&*** ~a ambisonics:" studio-string)
+    (setq icst (ambi-speakers (mapcar #'jorge-to-ambi speaker-data)))
+    (summary-doc coords icst)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; 21.3.25: centre (5) lower and tops further away
-(let ((studio1 '( ;; unterer Ring
-                 (13 (-1.35 3.25 0)) ; (speaker-channel (X Y Z))
-                 (14 (1.35 3.25 0))
-                 (15 (3.25 1.35 0))
-                 (16 (3.25 -1.35 0))
-                 (17 (1.35 -3.25 0))
-                 (18 (-1.35 -3.25 0))
-                 (19 (-3.25 -1.35 0))
-                 (20 (-3.25 1.35 0))
-                 ;; Obere Ring aussen: 1-4 are the big genes: lass ich raus
-                 ;; (1 (-3.25 3.05 1.25))
-                 (5 (0 3.45 1.23))
-                 ;; (2 (3.25 3.05 1.25))
-                 (6 (3.25 0 1.6))
-                 ;; (3 (3.25 -3.05 1.25))
-                 (7 (0 -3.45 1.6))
-                 ;; (4 (-3.25 -3.05 1.25))
-                 (8 (-3.25 0 1.6))
-                 ;; Obere Ring innen
-                 (9 (-1.45 1.45 1.52))
-                 (10 (1.45 1.45 1.52))
-                 (11 (1.45 -1.45 1.52))
-                 (12 (-1.45 -1.45 1.52)))))
-  (print "*** Studio 1 -100<->100 range (e.g. reasurroundpan X,Y,Z values)")
-  (jorge-to-sad studio1)
-  (print "*** Studio 1 ambisonics:")
-  (ambi-speakers (loop for speaker in studio1
-                       collect (jorge-to-ambi speaker))))
+;;; 30.4.26: centre (5) lower and tops further away
+(do-all-systems "Studio 1"
+  '(;; unterer Ring
+    (13 (-1.56 3.14 0))                 ; (speaker-channel (X Y Z))
+    (14 (1.56 3.14 0))
+    (15 (3.23 1.34 0))
+    (16 (3.23 -1.34 0))
+    (17 (1.34 -3.23 0))
+    (18 (-1.34 -3.23 0))
+    (19 (-3.23 -1.34 0))
+    (20 (-3.23 1.34 0))
+    ;; mittlere Ring aussen: 1-4 are the big genes: lass ich raus
+    ;; (1 (-3.25 3.05 1.25))
+    (5 (0 3.32 1.15))
+    ;; (2 (3.25 3.05 1.25))
+    (6 (3.32 0 1.15))
+    ;; (3 (3.25 -3.05 1.25))
+    (7 (0 -3.32 1.15))
+    ;; (4 (-3.25 -3.05 1.25))
+    (8 (-3.32 0 1.15))
+    ;; Obere Ring innen
+    (9 (-1.40 1.40 1.60))
+    (10 (1.45 1.40 1.60))
+    (11 (1.45 -1.40 1.60))
+    (12 (-1.45 -1.40 1.60))))
 
-(let ((neue-aula '((1 (-680 800 325))   ; main: vida L (war  (-550 1100 500))
-                   (2 (680 800 325))    ; main: vida R (war (550 1100 500))
-                   (3 (0 1150 550))     ; centre: Gravis 15XW
-                   ;; 4 is main sub cluster
-                   (5 (-525 -1120 150))  ; main rears: vida R
-                   (6 (525 -1120 150)) ; main rears: vida L
-                   ;; Seiten
-                   (7 (-800 400 500))   ; Seite Vorne Links: gravis 15XW
-                   (8 (800 400 500))    ; Seite Vorne Rechts: gravis 15XW
-                   (9 (-800 -400 500))  ; Seite Hinten Links: gravis 15XW
-                   (10 (800 -400 500))  ; Seite Hinten Rechts: gravis 15XW
-                   (11 (-800 0 500))     ; Seite Links Mitte: gravis 15XW
-                   (12 (800 0 500))    ; Seite Rechts Mitte: gravis 15XW
-                   ;; Decke
-                   (13 (-300 400 800))  ; Decke Links Vorn: gravis 15W
-                   (14 (300 400 800))   ; Decke Rechts Vorn: gravis 15W
-                   (15 (-300 -400 800)) ; Decke Links Hinten: gravis 15W
-                   (16 (300 -400 800))  ; Decke Rechts Hinten: gravis 15W
-                   (17 (-300 0 800))    ; Decke Links Mitte: gravis 15W
-                   (18 (300 0 800))     ; Decke Rechts Vorn: gravis 15W
-                   ;; additional Centres
-                   (19 (-420 1100 500)) ; off Centre Left (front)
-                   (20 (420 1100 500))  ; off Centre Rightt (front)
-                   (21 (0 -1190 190))   ; Hinten Mitte
-                   ;; now for the fills: front are all CA 106 Pros
-                   (22 (-450 700 -50))     ; FF LL (extrem links)
-                   (23 (-225 700 -50))     ; FF L
-                   (24 (0 700 -50))        ; FF C
-                   (25 (225 700 -50))      ; FF R
-                   (26 (450 700 -50))      ; FF RR (extrem rechts)
-                   ;; rears are all Sona 5s
-                   (27 (-800 -1100 550))   ; Empore LL
-                   (28 (-400 -1100 550))   ; Empore L
-                   (29 (400 -1100 550))    ; Empore R
-                   (30 (800 -1100 550))))) ; Empore RR
-  (print "*** Neue Aula -100<->100 range (e.g. reasurroundpan)")
-  (print (jorge-to-sad neue-aula))
-  (print "*** Neue Aula ambisonics:")
-  (ambi-speakers (mapcar #'jorge-to-ambi neue-aula)))
+(do-all-systems "Neue Aula"
+  '((1 (-680 800 325))                  ; main: vida L (war  (-550 1100 500))
+    (2 (680 800 325))                   ; main: vida R (war (550 1100 500))
+    (3 (0 1150 550))                    ; centre: Gravis 15XW
+    ;; 4 is main sub cluster
+    (5 (-525 -1120 150))                ; main rears: vida R
+    (6 (525 -1120 150))                 ; main rears: vida L
+    ;; Seiten
+    (7 (-800 400 500))                  ; Seite Vorne Links: gravis 15XW
+    (8 (800 400 500))                   ; Seite Vorne Rechts: gravis 15XW
+    (9 (-800 -400 500))                 ; Seite Hinten Links: gravis 15XW
+    (10 (800 -400 500))                 ; Seite Hinten Rechts: gravis 15XW
+    (11 (-800 0 500))                   ; Seite Links Mitte: gravis 15XW
+    (12 (800 0 500))                    ; Seite Rechts Mitte: gravis 15XW
+    ;; Decke
+    (13 (-300 400 800))                 ; Decke Links Vorn: gravis 15W
+    (14 (300 400 800))                  ; Decke Rechts Vorn: gravis 15W
+    (15 (-300 -400 800))                ; Decke Links Hinten: gravis 15W
+    (16 (300 -400 800))                 ; Decke Rechts Hinten: gravis 15W
+    (17 (-300 0 800))                   ; Decke Links Mitte: gravis 15W
+    (18 (300 0 800))                    ; Decke Rechts Vorn: gravis 15W
+    ;; additional Centres
+    (19 (-420 1100 500))                ; off Centre Left (front)
+    (20 (420 1100 500))                 ; off Centre Rightt (front)
+    (21 (0 -1190 190))                  ; Hinten Mitte
+    ;; now for the fills: front are all CA 106 Pros
+    (22 (-450 700 -50))                   ; FF LL (extrem links)
+    (23 (-225 700 -50))                   ; FF L
+    (24 (0 700 -50))                      ; FF C
+    (25 (225 700 -50))                    ; FF R
+    (26 (450 700 -50))                    ; FF RR (extrem rechts)
+    ;; rears are all Sona 5s
+    (27 (-800 -1100 550))                 ; Empore LL
+    (28 (-400 -1100 550))                 ; Empore L
+    (29 (400 -1100 550))                  ; Empore R
+    (30 (800 -1100 550))))                ; Empore RR
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 #|
@@ -483,7 +501,37 @@ http://www.csgnetwork.com/trigtriformulatables.html
                  (10 (1.45 1.45 1.52))
                  (11 (1.45 -1.45 1.52))
                  (12 (-1.45 -1.45 1.52)))))
-  (jorge-to-sad studio1))
+(jorge-to-sad studio1))
+
+;;; 21.3.25: centre (5) lower and tops further away
+(let ((studio1 '( ;; unterer Ring
+                 (13 (-1.35 3.25 0)) ; (speaker-channel (X Y Z))
+                 (14 (1.35 3.25 0))
+                 (15 (3.25 1.35 0))
+                 (16 (3.25 -1.35 0))
+                 (17 (1.35 -3.25 0))
+                 (18 (-1.35 -3.25 0))
+                 (19 (-3.25 -1.35 0))
+                 (20 (-3.25 1.35 0))
+                 ;; Obere Ring aussen: 1-4 are the big genes: lass ich raus
+                 ;; (1 (-3.25 3.05 1.25))
+                 (5 (0 3.45 1.23))
+                 ;; (2 (3.25 3.05 1.25))
+                 (6 (3.25 0 1.6))
+                 ;; (3 (3.25 -3.05 1.25))
+                 (7 (0 -3.45 1.6))
+                 ;; (4 (-3.25 -3.05 1.25))
+                 (8 (-3.25 0 1.6))
+                 ;; Obere Ring innen
+                 (9 (-1.45 1.45 1.52))
+                 (10 (1.45 1.45 1.52))
+                 (11 (1.45 -1.45 1.52))
+                 (12 (-1.45 -1.45 1.52)))))
+  (print "*** Studio 1 -100<->100 range (e.g. reasurroundpan X,Y,Z values)")
+  (jorge-to-sad studio1)
+  (print "*** Studio 1 ambisonics:")
+  (ambi-speakers (loop for speaker in studio1
+                       collect (jorge-to-ambi speaker))))
 |#
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; EOF
