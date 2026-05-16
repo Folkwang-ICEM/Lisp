@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  12:13:45 Sat May 16 2026 CEST
+;;; $$ Last modified:  13:11:03 Sat May 16 2026 CEST
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -247,7 +247,7 @@ http://www.csgnetwork.com/trigtriformulatables.html
 
 (defun summary-doc (coords icst)
   (terpri)
-  (format t "~%~%channel listing omitting LFE on 4")
+  (format t "~%~%channel listing (no LFE)")
   (format t "~&  degrees (0-360): azimuth (clockwise) elevation ~
              (X Y Z: -100 to +100):")
   (loop for triple in icst
