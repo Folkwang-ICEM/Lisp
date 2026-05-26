@@ -7,7 +7,7 @@
 ;;;
 ;;; Creation date:    14th September 2021
 ;;;
-;;; $$ Last modified:  13:11:03 Sat May 16 2026 CEST
+;;; $$ Last modified:  14:36:39 Tue May 26 2026 CEST
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -248,7 +248,7 @@ http://www.csgnetwork.com/trigtriformulatables.html
 (defun summary-doc (coords icst)
   (terpri)
   (format t "~%~%channel listing (no LFE)")
-  (format t "~&  degrees (0-360): azimuth (clockwise) elevation ~
+  (format t "~&           degrees (0-360 clockwise): azimuth elevation ~
              (X Y Z: -100 to +100):")
   (loop for triple in icst
         for coord in coords
@@ -295,6 +295,21 @@ http://www.csgnetwork.com/trigtriformulatables.html
     (10 (1.45 1.40 1.60))
     (11 (1.45 -1.40 1.60))
     (12 (-1.45 -1.40 1.60))))
+
+
+(do-all-systems "Studio 2 7.1.4"
+  '((1 (-90 120 0))                     ; L
+    (2 (90 120 0))                      ; R
+    (3 (0 140 10))                      ; centre
+    ;; 4 is sub
+    (5 (-145 -45 0))                    ; L side
+    (6 (145 -45 0))                     ; R side
+    (7 (-155 -315 25))                   ; Ls
+    (8 (155 -315 25))                    ; Rs
+    (9 (-100 100 80))                    ; top L
+    (10 (100 100 80))                   ; top R
+    (11 (-90 -70 80))                      ; Top Ls
+    (12 (90 -70 80))))                 ; Top Rs
 
 (do-all-systems "Neue Aula"
   '((1 (-680 800 325))                  ; main: vida L (war  (-550 1100 500))
